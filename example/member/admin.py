@@ -1,11 +1,15 @@
 from django.contrib import admin
 from member.models import Member
+from member.forms import SetCertificationDateForm
+from post.models import Post
 
 class MemberAdmin(admin.ModelAdmin):
     actions = ['set_certification_date']
-    action_form = SetCertificationDateForm # SelectDateWidget
+    action_form = SetCertificationDateForm
     def set_certification_date(self, request, queryset):
-        year, month, day = . . .#POSTRequest에서값을꺼냄
+        year = request.POST.get('certification_date_year')
+        month = request.POST.get('certification_date_month')
+        day = request.POST.get('certification_date_day')
 
         if year and month and day:
             date_str = '{0}-{1}-{2}'.format(year, month, day)
@@ -13,12 +17,12 @@ class MemberAdmin(admin.ModelAdmin):
 
             for member in queryset:
                 Member.objects.filter(id=member.id).update(is_certificated=True, certification_date=date)
-            messages.success(request, '{0}명의회원을인증했습니다.'.format(len(queryset)))
+            messages.success(request, '{0}명의 회원을 인증했습니다.'.format(len(queryset)))
 
         else:
-            messages.error(request,'날짜가선택되지않았습니다.')
+            messages.error(request,'날짜가 선택되지 않았습니다.')
 
-    set_certification_date.short_description = '선택된유저를해당날짜기준으로인증합니다.'
+    set_certification_date.short_description = '선택된 유저를 해당 날짜 기준으로 인증합니다.'
     list_per_page = 5
     list_display = (
         'id', 'email', 'username',
@@ -31,6 +35,6 @@ class MemberAdmin(admin.ModelAdmin):
     def post_count(self, obj):
         return Post.objects.filter(member=obj).count()
 
-    post_count.short_description = '작성한글수'
+    post_count.short_description = '작성한 글 수'
 
 admin.site.register(Member, MemberAdmin)

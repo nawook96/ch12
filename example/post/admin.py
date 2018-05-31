@@ -1,5 +1,10 @@
 from django.contrib import admin
+from post.filters import CreatedDateFilter
+from post.forms import MyPostAdminForm
 from post.models import Category, Post, Comment
+from django.contrib.admin import AdminSite
+from django.conf.urls import url
+from django.template.response import TemplateResponse
 
 class PostAdmin(admin.ModelAdmin):
     def get_urls(self):
@@ -15,7 +20,7 @@ class PostAdmin(admin.ModelAdmin):
             key1=value1,
             key2=value2,
         )
-    return TemplateResponse(request, "admin/post_status.html", context)
+        return TemplateResponse(request, "admin/post_status.html", context)
     form = MyPostAdminForm
     list_per_page = 10
     list_display = (
@@ -25,20 +30,25 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = (
         'member__permission',
         'category__name', 'is_deleted', )
-    fields = ('member', 'category', 'title', )
     fieldsets = (
         ('기본정보', {
             'fields': (('member', 'category', ), )
         }),
         ('제목및내용', {
             'fields': (
-                'title', 'subtitle', ‘content',
+                'title', 'subtitle', 'content',
             )
         }),
         ('삭제', {
             'fields': ('is_deleted', 'deleted_at', )
         })
     )
+class CommentAdminSite(AdminSite):
+    site_header = 'Comment administration'
+
 admin.site.register(Category)
 admin.site.register(Post, PostAdmin)
-admin.site.register(Comment)
+#admin.site.register(Comment)
+
+comment_admin = CommentAdminSite(name='comment admin')
+comment_admin.register(Comment)
