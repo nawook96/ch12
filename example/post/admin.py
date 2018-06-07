@@ -51,4 +51,4 @@ admin.site.register(Post, PostAdmin)
 #admin.site.register(Comment)
 
 comment_admin = CommentAdminSite(name='comment admin')
-comment_admin.register(Comment)
+admin.site.register(Comment)
